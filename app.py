@@ -11,8 +11,6 @@ import plotly.express as px
 # ctrl-c in terminal to end script at any time
 
 st.title('Street Trees London')
-st.write("An app to display the different trees found on the streets of london")
-st.write("\n")
 
 
 # Load data
@@ -39,8 +37,11 @@ df = df.drop(columns=['species_name', 'common_name',
 df = df[(df.longitude > -1) & (df.longitude < 1)]
 df = df[(df.latitude > 51) & (df.latitude < 52)]
 
+# clean data - rename long tree name
+df['display_name'][df.display_name == 'Chestnut/ Sweet Chestnut'] = 'Chestnut'
 
-st.sidebar.subheader('Choose your data :evergreen_tree:')
+# sidebar to select different boroughs and tree types to display
+st.sidebar.markdown('An app to display the different trees found on the streets of london')
 
 st.sidebar.subheader('Select Boroughs to Display')
 all_boroughs = df.borough.unique().tolist()
@@ -74,7 +75,7 @@ if st.sidebar.checkbox(''):
     st.subheader('Raw data head')
     st.write(df.head(50))
 
-
+# set map colours for different trees
 colour_dict = {
 "Cherry":'[255,0,0, 160]',
 "Maple":'[255,127,0, 160]',
@@ -88,7 +89,7 @@ colour_dict = {
 "Hawthorn":'[237,185,185, 160]',
 "Apple":'[231,233,18, 160]',
 "Hornbeam":'[185,237,224, 160]',
-"Chestnut/ Sweet Chestnut":'[185,215,237, 160]',
+"Chestnut":'[185,215,237, 160]',
 "Pear":'[220,185,237, 160]',
 "Cypress":'[143,35,35, 160]',
 "Poplar":'[143,106,35, 160]',
@@ -102,6 +103,7 @@ colour_dict = {
 "Chestnut":'[255,0,170, 160]',
 }
 
+# generate map with selected data using pydeck_chart
 def scatter_plotter_layer(type='Plane'):
         return pdk.Layer(
             "ScatterplotLayer",
@@ -114,7 +116,6 @@ def scatter_plotter_layer(type='Plane'):
 
 layers=[scatter_plotter_layer(type=x) for x in types_sel]
 
-# st.subheader('Interactive Map')
 st.pydeck_chart(pdk.Deck(
     map_style='mapbox://styles/mapbox/light-v9',
     # map_style="open-street-map",
